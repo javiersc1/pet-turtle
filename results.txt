@@ -1,0 +1,99 @@
+# imbalanced datasets
+
+# dermamnist see for table distribution https://pmc.ncbi.nlm.nih.gov/articles/PMC6091241/table/t1/
+K-means: 0.2628
+Turtle: 0.3157
+Pet-Turtle: 0.5990
+Linear Probe: 0.8185
+
+# OCTMNIST 108,312 images (37,206 with choroidal neovascularization, 11,349 with diabetic macular edema, 8,617 with drusen, and 51,140 normal) 
+# https://www.cell.com/cell/fulltext/S0092-8674(18)30154-5?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS0092867418301545%3Fshowall%3Dtrue
+kmeans: 0.4706
+turtle: 0.5860
+pet-turtle: 0.6425
+linear probe: 0.9339
+
+# BloodMNIST see https://www.sciencedirect.com/science/article/pii/S2352340920303681?via%3Dihub for classes
+kmeans: 0.4481
+turtle: 0.5024
+pet-turtle:0.5495
+linear probe: 0.9611
+
+#OrganAMNIST see https://arxiv.org/pdf/1901.04056
+kmeans: 0.4189
+turtle: 0.4529
+pet-turtle: 0.5545
+linear probe: 0.8994
+
+#TissueMNIST see https://www-nature-com.proxy.lib.umich.edu/articles/nmeth.2083
+kmeans: 0.2614
+turtle: 0.2821
+pet-turtle: 0.3804
+linear probe: 0.6048
+
+# balanced datasets
+
+# cifar10
+kmeans: 0.6777
+turtle: 0.7626
+pet-turtle: 0.8271
+linear probe: 0.9407
+
+# food 101
+kmeans: 0.6432
+turtle: 0.8465
+pet turtle: 0.8877
+linear probe: 0.9443
+
+# euro sat
+kmeans: 0.4916
+turtle: 0.7770
+pet-turtle: 0.7978
+linear probe: 0.9524
+
+# caltech
+kmeans: 0.7954
+turtle: 0.8571
+pet-turtle: 0.8640
+linear probe: 0.9688
+
+# DTD
+kmeans: 0.4670
+turtle: 0.5553
+pet-turtle: 0.5909
+linear probe: 0.8250
+
+
+# POWER DISTRIBUTION EXPERIMENT
+
+# alpha = 2.0
+kmeans: 0.3167
+turtle: 0.3949
+pet-turtle: 0.6166
+linear probe: 0.9619
+
+# alpha = 1.50
+kmeans: 0.4488
+turtle: 0.4809
+pet-turtle: 0.6661
+linear probe: 0.9503
+
+# alpha = 1.0
+kmeans: 0.4886
+turtle: 0.6074
+pet-turtle: 0.7249
+linear probe: 0.9457
+
+# alpha = 0.50
+kmeans: 0.5988
+turtle: 0.6905
+pet-turtle: 0.8043
+linear probe: 0.9384
+
+# alpha = 0.25
+kmeans: 0.6762
+turtle: 0.7275
+pet-turtle: 0.8217
+linear probe: 0.9378
+
+
