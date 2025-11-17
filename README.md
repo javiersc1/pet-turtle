@@ -27,7 +27,7 @@ conda create -n turtle python=3.12
 ```
 
 ### Dependencies
-The code is built with Pytorch 2.7 but should work on newer versions due to minimal complexity. We use openAI's CLIP model package from [github.com/openai/CLIP](https://github.com/openai/CLIP) and the MedMNIST package for easy dataloading of medical datasets from [github.com/MedMNIST/MedMNIST](https://github.com/MedMNIST/MedMNIST).
+The code is built with Pytorch 2.8 but should work on newer versions due to minimal complexity. We use openAI's CLIP model package from [github.com/openai/CLIP](https://github.com/openai/CLIP) and the MedMNIST package for easy dataloading of medical datasets from [github.com/MedMNIST/MedMNIST](https://github.com/MedMNIST/MedMNIST).
 
 ```
 pip install torch torchvision
@@ -43,16 +43,16 @@ pip install git+https://github.com/openai/CLIP.git
 
 ## Quick Start
 
-1. Precompute representations and save ground truth labels for some dataset, e.g., cifar10. Possible choices: {cifar10, food101, eurosat, caltech101, dtd, DermaMNIST, OCTMNIST, BloodMNIST, OrganAMNIST, TissueMNIST}. In our experiments, we use the largest CLIP model available which is 'clipRN50x64'. 
+1. Precompute representations and save ground truth labels for some dataset, e.g., cifar10. In our experiments, we use the largest CLIP model available which is 'clipRN50x64'. 
 ```
 python precompute_representations.py --phis clipRN50x64 --dataset cifar10
 python precompute_labels.py --dataset cifar10
 ```
 
-2. Run a single trial. The option '--warm_start' allows for using last known hyperplane (in previous iteration) to be used in the next one. Remove this line to randomly initialize each time the hyperplane needs to be updated. We recommend leaving this option on.
+2. Run a single trial. The option '--warm_start' allows for using last known hyperplane (in previous iteration) to be used in the next one. Remove this line to randomly initialize each time the hyperplane needs to be updated. Some datasets may benefit while others will degrade clustering quality.
 ```
 python kmeans.py --phis clipRN50x64 --dataset cifar10
 python linear_probe.py --phis clipRN50x64 --dataset cifar10
-python turtle_original.py --phis clipRN50x64 --warm_start --dataset cifar10
-python turtle_pet.py --phis clipRN50x64 --warm_start --dataset cifar10
+python turtle_original.py --phis clipRN50x64 --dataset cifar10 --warm_start
+python turtle_pet.py --phis clipRN50x64 --dataset cifar10 --warm_start
 ```

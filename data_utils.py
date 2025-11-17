@@ -107,39 +107,6 @@ def get_datasets(dataset, transform, root_dir='./data'):
         from medmnist import TissueMNIST
         train_dataset = TissueMNIST(split="train",transform=transform, download=True, size=224)
         val_dataset = TissueMNIST(split="test",transform=transform, download=True, size=224)
-    elif dataset == "PathMNIST":
-        from medmnist import PathMNIST
-        train_dataset = PathMNIST(split="train",transform=transform, download=True, size=224)
-        val_dataset = PathMNIST(split="test",transform=transform, download=True, size=224)
-    elif dataset == "BreastMNIST":
-        from medmnist import BreastMNIST
-        train_dataset = BreastMNIST(split="train",transform=transform, download=True, size=224)
-        val_dataset = BreastMNIST(split="test",transform=transform, download=True, size=224)
-    elif dataset == "PneumoniaMNIST":
-        from medmnist import PneumoniaMNIST
-        train_dataset = PneumoniaMNIST(split="train",transform=transform, download=True, size=224)
-        val_dataset = PneumoniaMNIST(split="test",transform=transform, download=True, size=224)
-
-    elif dataset == "ChestMNIST":
-        from medmnist import ChestMNIST
-        train_dataset = ChestMNIST(split="train",transform=transform, download=True, size=224)
-        val_dataset = ChestMNIST(split="test",transform=transform, download=True, size=224)
-
-    elif dataset == "iNaturalist":
-        dataset = dsets.INaturalist(root=os.path.join(data_path, "iNaturalist"), version='2017', target_type='super', transform=transform, download=True)
-        from torch.utils.data import random_split
-        train_size = int(0.85 * len(dataset))
-        test_size = len(dataset) - train_size
-        generator2 = torch.Generator().manual_seed(42)
-        train_dataset, val_dataset = random_split(dataset, [train_size, test_size], generator=generator2)
-
-    elif dataset == "iNaturalistFull":
-        dataset = dsets.INaturalist(root=os.path.join(data_path, "iNaturalistFull"), version='2017', target_type='full', transform=transform, download=True)
-        from torch.utils.data import random_split
-        train_size = int(0.85 * len(dataset))
-        test_size = len(dataset) - train_size
-        generator2 = torch.Generator().manual_seed(42)
-        train_dataset, val_dataset = random_split(dataset, [train_size, test_size], generator=generator2)
 
     elif dataset == "birdsnap":
         """

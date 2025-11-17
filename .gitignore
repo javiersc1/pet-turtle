@@ -1,5 +1,6 @@
 *.pt
 *.pth
 data/*
-results/*
 *.pyc
+scripts/*
+alternate_ideas/*

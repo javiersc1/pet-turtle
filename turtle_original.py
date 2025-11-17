@@ -16,7 +16,7 @@ def _parse_args(args):
     parser.add_argument('--phis', type=str, default=["clipvitL14", "dinov2"], nargs='+', help="Representation spaces to run TURTLE",
                             choices=['clipRN50', 'clipRN101', 'clipRN50x4', 'clipRN50x16', 'clipRN50x64', 'clipvitB32', 'clipvitB16', 'clipvitL14', 'dinov2', "auccl"])
     # training
-    parser.add_argument('--gamma', type=float, default=10.0, help='Hyperparameter for entropy regularization in Eq. (12)')
+    parser.add_argument('--gamma', type=float, default=1.0, help='Hyperparameter for entropy regularization in Eq. (12)')
     parser.add_argument('--T', type=int, default=6000, help='Number of outer iterations to train task encoder')
     parser.add_argument('--inner_lr', type=float, default=0.001, help='Learning rate for inner loop')
     parser.add_argument('--outer_lr', type=float, default=0.001, help='Learning rate for task encoder')
@@ -27,6 +27,7 @@ def _parse_args(args):
     parser.add_argument('--device', type=str, default="cuda", help="cuda or cpu")
     parser.add_argument('--root_dir', type=str, default="data", help='Root dir to store everything')
     parser.add_argument('--seed', type=int, default=42, help='Random seed')
+    parser.add_argument('--verbose', action='store_true')
     return parser.parse_args(args)
 
 def run(args=None):
@@ -37,13 +38,15 @@ def run(args=None):
     Zs_train = [np.load(f"{args.root_dir}/representations/{phi}/{args.dataset}_train.npy").astype(np.float32) for phi in args.phis]
     Zs_val = [np.load(f"{args.root_dir}/representations/{phi}/{args.dataset}_val.npy").astype(np.float32) for phi in args.phis]
     y_gt_val = np.load(f"{args.root_dir}/labels/{args.dataset}_val.npy")
-    print(f'Load dataset {args.dataset}')
-    print(f'Representations of {args.phis}: ' + ' '.join(str(Z_train.shape) for Z_train in Zs_train))
 
     n_tr, C = Zs_train[0].shape[0], datasets_to_c[args.dataset]
     feature_dims = [Z_train.shape[1] for Z_train in Zs_train]
     batch_size = min(args.batch_size, n_tr)
-    print("Number of training samples:", n_tr)
+
+    if args.verbose:
+        print(f'Load dataset {args.dataset}')
+        print(f'Representations of {args.phis}: ' + ' '.join(str(Z_train.shape) for Z_train in Zs_train))
+        print("Number of training samples:", n_tr)
 
     # Define task encoder
     #task_encoder = [nn.utils.weight_norm(nn.Linear(d, C)).to(args.device) for d in feature_dims]
@@ -76,7 +79,10 @@ def run(args=None):
         os.makedirs(exp_path)
     best_acc = 0.0
 
-    iters_bar = tqdm(range(args.T))
+    if args.verbose:
+        iters_bar = tqdm(range(args.T))
+    else:
+        iters_bar = range(args.T)
     for i in iters_bar:
         optimizer.zero_grad()
         # load batch of data
@@ -117,14 +123,16 @@ def run(args=None):
             cluster_acc, _ = get_cluster_acc(preds_val, y_gt_val)
 
             if cluster_acc > best_acc and len(np.unique(preds_val)) == C:
-                print("best acc: "+str(cluster_acc)+" with clusters  "+str(len(np.unique(preds_val))))
+                if args.verbose:
+                    print("best acc: "+str(cluster_acc)+" with clusters  "+str(len(np.unique(preds_val))))
                 best_acc = cluster_acc
                 torch.save({f'phi{i+1}': task_phi.state_dict() for i, task_phi in enumerate(task_encoder)}, f'{exp_path}/turtle_model.pt')
+            if args.verbose:
+                iters_bar.set_description(f'Training loss {float(pred_error.detach()):.3f}, entropy {float(entr_reg.detach()):.3f}, found clusters {len(np.unique(preds_val))}/{C}, cluster acc {cluster_acc:.4f}')
 
-            iters_bar.set_description(f'Training loss {float(pred_error.detach()):.3f}, entropy {float(entr_reg.detach()):.3f}, found clusters {len(np.unique(preds_val))}/{C}, cluster acc {cluster_acc:.4f}')
-
-    print(f'Training finished! ')
-    print(f'Training loss {float(pred_error.detach()):.3f}, entropy {float(entr_reg.detach()):.3f}, Number of found clusters {len(np.unique(preds_val))}/{C}, Cluster Acc {cluster_acc:.4f}')
+    if args.verbose:
+        print(f'Training finished! ')
+        print(f'Training loss {float(pred_error.detach()):.3f}, entropy {float(entr_reg.detach()):.3f}, Number of found clusters {len(np.unique(preds_val))}/{C}, Cluster Acc {cluster_acc:.4f}')
 
     # save results
     inner_start = 'warmstart' if args.warm_start else 'coldstart'
@@ -135,9 +143,12 @@ def run(args=None):
         #nn.utils.remove_weight_norm(task_phi)
         nn.utils.parametrize.remove_parametrizations(task_phi, "weight")
 
+    return best_acc
+
     #task_path = f"turtle_{phis}_innerlr{args.inner_lr}_outerlr{args.outer_lr}_T{args.T}_M{args.M}_{inner_start}_gamma{args.gamma}_bs{args.batch_size}_seed{args.seed}"
     #torch.save({f'phi{i+1}': task_phi.state_dict() for i, task_phi in enumerate(task_encoder)}, f'{exp_path}/model.pt')
 
 
 if __name__ == '__main__':
-    run()
+    val = run()
+    print(val)
